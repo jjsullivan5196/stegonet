@@ -225,13 +225,11 @@ function retrieve(ev) {
 	for(var i = 0; i < buffer.length; i++) byteView[i] = buffer[i];
 	newFile = new Blob([byteBuffer], {type:getMime(fileName)});
 	
-	reader.onload = function(e) {
-		link = document.getElementById('rFile');
-		link.href = e.target.result;
-		link.download = fileName;
-		link.innerHTML = String("Retrieved: " + fileName);
-	}
-	reader.readAsDataURL(newFile);
+	link = document.getElementById('rFile');
+	URL.revokeObjectURL(link.href);
+	link.href = URL.createObjectURL(newFile);
+	link.download = fileName;
+	link.innerHTML = String("Retrieved: " + fileName);
 }
 document.getElementById('retrieve').addEventListener('click', retrieve, false);
 
