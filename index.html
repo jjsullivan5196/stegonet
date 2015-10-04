@@ -1,11 +1,13 @@
 <html>
-<title id="titleText"></title>
-<canvas id="Image">Image</canvas><br/>
+<head><title id="titleText"></title></head>
+<body>
+<div style="width:640;height:480"><canvas id="Image" style="height:100%" width="0" height="0">Image</canvas></div>
 <input type="file" id="image">Choose Image</input><br/>
 <input type="file" id="inFile">Choose File</input><br/>
 <button type="button" id="inject">Inject</button>
 <button type="button" id="retrieve">Retrieve</button><br/>
 <a href="" download="" id="rFile"></a>
+<p id="err"></p>
 <script type="text/javascript">
 title = "Steganosaurus: ";
 titleArray = [
@@ -24,6 +26,33 @@ title += titleArray[parseInt(Math.random() * 10)];
 document.getElementById('titleText').innerHTML = title;
 
 var alphaConst = 255;
+
+function getMime(fname) {
+	var ext = new String();
+	for(var i = (fname.length - 1); fname[i] != '.'; i--) {
+		ext = fname[i] + ext;
+		if(i == 0) return "text/plain";
+	}
+	switch(ext) {
+		case "jpg":
+		case "jpeg":
+		case "JPG":
+		case "JPEG":
+			return "image/jpeg";
+		case "png":
+		case "PNG":
+			return "image/png";
+		case "webm":
+			return "video/webm";
+		case "gif":
+			return "image/gif";
+		case "txt":
+			return "text/plain";
+		default:
+			return "text/plain";
+	}
+}
+
 function setPixel(data, idx, color) {
 	idx = idx*4;
 	data[idx+0] = color[0];
@@ -81,6 +110,16 @@ function avgColor(col1, col2) {
 	outCol.push(alphaConst);
 	return outCol;
 }
+function xthPattern(idx, xth) {
+	if(idx % xth == 0) return true;
+	else return false;
+}
+function checkSize(inBytes, imgLength, pattern, args) {
+	count = 0;
+	for(var i = 4; i < imgLength; i++) if(pattern(i, args)) count++;
+	if(count >= inBytes) return true;
+	else return false;
+}
 
 org = document.getElementById("Image");
 inImg = org.getContext("2d");
@@ -120,6 +159,13 @@ function inject(ev) {
 		fileBytes = new Uint8Array(fileName.concat(fileCont));
 		byteNum = fileBytes.length;
 		
+		if(!checkSize(byteNum, (data.length/4), xthPattern, 3)) {
+			console.log("In file too large to inject.");
+			document.getElementById('err').innerHTML = "Jeeze, that file is too big for this image! Try again.";
+			return false;
+		}
+		else document.getElementById('err').innerHTML = "";
+		
 		console.log("File name: " + file.name + "\nBytes to be injected: " + byteNum);
 		
 		ones = byteNum%1000;
@@ -134,7 +180,7 @@ function inject(ev) {
 		setPixel(ndata, 3, getPixel(data, 3));
 		
 		for(var i = 4, j = 0; i < (data.length/4); i++) {
-			if( ((i+1) % 3 == 0) && (j < fileBytes.length) ) {
+			if( (xthPattern(i, 3)) && (j < fileBytes.length) ) {
 				baseColor = avgColor(getPixel(data, (i-1)), getPixel(data, (i+1)));
 				dataColor = valToRGBA(fileBytes[j], 7);
 				finalColor = injectColor(baseColor, dataColor, 7);
@@ -161,7 +207,7 @@ function retrieve(ev) {
 	byteNum = (rgbaToVal(col3, 10)*1000000) + (rgbaToVal(col2, 10)*1000) + rgbaToVal(col1, 10);
 	
 	for(var i = 4; buffer.length < byteNum; i++) {
-		if((i+1) % 3 == 0) {
+		if(xthPattern(i, 3)) {
 			baseColor = avgColor(getPixel(data, (i-1)), getPixel(data, (i+1)));
 			dataColor = retrieveColor(getPixel(data, i), baseColor, 7);
 			inData = rgbaToVal(dataColor, 7);
@@ -177,7 +223,7 @@ function retrieve(ev) {
 	byteBuffer = new ArrayBuffer(buffer.length);
 	byteView = new Uint8Array(byteBuffer);
 	for(var i = 0; i < buffer.length; i++) byteView[i] = buffer[i];
-	newFile = new Blob([byteBuffer]);
+	newFile = new Blob([byteBuffer], {type:getMime(fileName)});
 	
 	reader.onload = function(e) {
 		link = document.getElementById('rFile');
@@ -199,4 +245,5 @@ function check(ev) {
 }
 //document.getElementById('check').addEventListener('click', check, false);
 </script>
+</body>
 </html>
