@@ -1,3 +1,5 @@
+<html>
+<title id="titleText"></title>
 <canvas id="Image">Image</canvas><br/>
 <input type="file" id="image">Choose Image</input><br/>
 <input type="file" id="inFile">Choose File</input><br/>
@@ -5,6 +7,22 @@
 <button type="button" id="retrieve">Retrieve</button><br/>
 <a href="" download="" id="rFile"></a>
 <script type="text/javascript">
+title = "Steganosaurus: ";
+titleArray = [
+	"The world's greatest image stegonography tool.",
+	"Your secrets are not safe with us.",
+	"Shame.",
+	"Your number one source for evading the NSA.",
+	"Big brother is watching.",
+	"Images of your johnson don't work.",
+	"Use any image of the President for a surprise.",
+	"Why are you here?",
+	"We don't negotiate with terrorists.",
+	"Your packets have been diverted, consequences will never be the same."
+];
+title += titleArray[parseInt(Math.random() * 10)];
+document.getElementById('titleText').innerHTML = title;
+
 var alphaConst = 255;
 function setPixel(data, idx, color) {
 	idx = idx*4;
@@ -181,3 +199,4 @@ function check(ev) {
 }
 //document.getElementById('check').addEventListener('click', check, false);
 </script>
+</html>
