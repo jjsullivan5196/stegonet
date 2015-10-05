@@ -134,7 +134,7 @@ function avgColor(col1, col2) {
 	return outCol;
 }
 function xthPattern(idx, xth) {
-	if(idx % xth == 0) return true;
+	if((idx + 1) % xth == 0) return true;
 	else return false;
 }
 function checkSize(inBytes, imgLength, pattern, args) {
