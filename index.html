@@ -9,6 +9,7 @@
 <input type="file" id="inFile"/>File<br/>
 <button type="button" id="inject">Inject</button>
 <button type="button" id="retrieve">Retrieve</button><br/>
+<input type="number" id="xthPixel" size="1" maxlength="2" value="3" min="3" max="20"/> xth Pixel Storage<br/>
 <a href="" download="" id="rFile"></a>
 <p id="err"></p>
 </div>
@@ -195,7 +196,9 @@ function inject(ev) {
 		fileBytes = new Uint8Array(fileName.concat(fileCont));
 		byteNum = fileBytes.length;
 		
-		if(!checkSize(byteNum, (data.length/4), xthPattern, 3)) {
+		xth = parseInt(document.getElementById('xthPixel').value);
+		
+		if(!checkSize(byteNum, (data.length/4), xthPattern, xth)) {
 			console.log("In file too large to inject.");
 			document.getElementById('err').innerHTML = "Jeeze, that file is too big for this image! Try again.";
 			return false;
@@ -216,7 +219,7 @@ function inject(ev) {
 		setPixel(ndata, 3, getPixel(data, 3));
 		
 		for(var i = 4, j = 0; i < (data.length/4); i++) {
-			if( (xthPattern(i, 3)) && (j < fileBytes.length) ) {
+			if( (xthPattern(i, xth)) && (j < fileBytes.length) ) {
 				baseColor = avgColor(getPixel(data, (i-1)), getPixel(data, (i+1)));
 				dataColor = valToRGBA(fileBytes[j], 7);
 				finalColor = injectColor(baseColor, dataColor, 7);
@@ -247,8 +250,10 @@ function retrieve(ev) {
 	col3 = retrieveColor(getPixel(data, 2),getPixel(data, 3),10);
 	byteNum = (rgbaToVal(col3, 10)*1000000) + (rgbaToVal(col2, 10)*1000) + rgbaToVal(col1, 10);
 	
+	xth = parseInt(document.getElementById('xthPixel').value);
+	
 	for(var i = 4; buffer.length < byteNum; i++) {
-		if(xthPattern(i, 3)) {
+		if(xthPattern(i, xth)) {
 			baseColor = avgColor(getPixel(data, (i-1)), getPixel(data, (i+1)));
 			dataColor = retrieveColor(getPixel(data, i), baseColor, 7);
 			inData = rgbaToVal(dataColor, 7);
