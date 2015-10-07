@@ -95,7 +95,7 @@ function retrieve(ev) {
 			dataColor = retrieveColor(getPixel(data, i), baseColor, 7);
 			inData = rgbaToVal(dataColor, 7);
 			buffer.push(inData);
-			}
+		}
 	}
 	
 	nameBytes = buffer.splice(0, (buffer[0] + 1)); nameBytes.shift();
@@ -114,14 +114,6 @@ function retrieve(ev) {
 	link.download = fileName;
 	link.innerHTML = String("Retrieved: " + fileName);
 }
-function check(ev) {
-	checkOld = inImg.getImageData(0, 0, org.width, org.height).data; checkNew = outImg.getImageData(0, 0, org.width, org.height).data; count = 0;
-	for(var i = 0; i < (checkOld.length/4); i++) {
-		oldColor = getPixel(checkOld, i);
-		newColor = getPixel(checkNew, i);
-		if((oldColor[0] != newColor[0]) || (oldColor[1] != newColor[1]) || (oldColor[2] != newColor[2]) || (oldColor[3] != newColor[3])) count++;
-	} console.log("Pixel differences found: " + count);
-}
 
 window.onload = function() {
 	org = document.getElementById('Image');
@@ -130,6 +122,5 @@ window.onload = function() {
 	document.getElementById('inFile').addEventListener('change', selectFile, false);
 	document.getElementById('inject').addEventListener('click', inject, false);
 	document.getElementById('retrieve').addEventListener('click', retrieve, false);
-	//document.getElementById('check').addEventListener('click', check, false);
 };
 

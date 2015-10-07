@@ -1,27 +1,18 @@
+var fileExt = {
+	'jpeg'	:	'image/jpeg',
+	'jpg'	:	'image/jpeg',
+	'png'	:	'image/png',
+	'webm'	:	'video/webm',
+	'txt'	:	'text/plain'
+};
 function getMime(fname) {
 	var ext = new String();
 	for(var i = (fname.length - 1); fname[i] != '.'; i--) {
-		ext = fname[i] + ext;
-		if(i == 0) return "text/plain";
+		ext = fname[i].toLowerCase() + ext;
+		if(i == 0) return fileExt['txt'];
 	}
-	switch(ext) {
-		case "jpg":
-		case "jpeg":
-		case "JPG":
-		case "JPEG":
-			return "image/jpeg";
-		case "png":
-		case "PNG":
-			return "image/png";
-		case "webm":
-			return "video/webm";
-		case "gif":
-			return "image/gif";
-		case "txt":
-			return "text/plain";
-		default:
-			return "text/plain";
-	}
+	if(!(ext in fileExt)) return fileExt['txt'];
+	else return fileExt[ext];
 }
 function dataURLToBlob(dataURL) {
 	var BASE64_MARKER = ';base64,';
@@ -51,10 +42,7 @@ var alphaConst = 255;
 
 function setPixel(data, idx, color) {
 	idx = idx*4;
-	data[idx+0] = color[0];
-	data[idx+1] = color[1];
-	data[idx+2] = color[2];
-	data[idx+3] = color[3];
+	for(var i = 0; i < color.length; i++) data[idx+i] = color[i];
 }
 function getPixel(data, idx) {
 	idx = idx*4;
@@ -111,7 +99,7 @@ function xthPattern(idx, xth) {
 	else return false;
 }
 function checkSize(inBytes, imgLength, pattern, args) {
-	count = 0;
+	var count = 0;
 	for(var i = 4; i < imgLength; i++) if(pattern(i, args)) count++;
 	if(count >= inBytes) return true;
 	else return false;

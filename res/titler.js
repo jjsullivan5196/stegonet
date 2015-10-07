@@ -11,5 +11,5 @@ titleArray = [
 	"We don't negotiate with terrorists.",
 	"Your packets have been diverted, consequences will never be the same."
 ];
-title += titleArray[parseInt(Math.random() * 10)];
+title += titleArray[parseInt(Math.random() * titleArray.length)];
 document.getElementById('titleText').innerHTML = title;
