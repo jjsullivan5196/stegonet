@@ -5,6 +5,8 @@ var fileExt = {
 	'webm'	:	'video/webm',
 	'txt'	:	'text/plain'
 };
+var ALPHA = 255;
+
 function getMime(fname) {
 	var ext = new String();
 	for(var i = (fname.length - 1); fname[i] != '.'; i--) {
@@ -38,8 +40,6 @@ function dataURLToBlob(dataURL) {
 	return new Blob([uInt8Array], {type: contentType});
 }
 
-var alphaConst = 255;
-
 function setPixel(data, idx, color) {
 	idx = idx*4;
 	for(var i = 0; i < color.length; i++) data[idx+i] = color[i];
@@ -48,8 +48,9 @@ function getPixel(data, idx) {
 	idx = idx*4;
 	return [data[idx+0],data[idx+1],data[idx+2],data[idx+3]];
 }
+
 function valToRGBA(val, base) {
-	color = [0, 0, 0, alphaConst];
+	color = [0, 0, 0, ALPHA];
 	
 	hundreds = (val - (val%Math.pow(base, 2)))/Math.pow(base, 2);
 	color[2] = parseInt(hundreds);
@@ -66,34 +67,34 @@ function rgbaToVal(color, base) {
 	return (color[0] + (color[1] * base) + (color[2] * Math.pow(base, 2)));
 }
 function injectColor(baseColor, dataColor, base) {
-	r = baseColor[0],g = baseColor[1],b = baseColor[2];
-	x = dataColor[0],y = dataColor[1],z = dataColor[2];
-	spacer = base - 1;
+	var r = baseColor[0],g = baseColor[1],b = baseColor[2];
+	var x = dataColor[0],y = dataColor[1],z = dataColor[2];
+	var spacer = base - 1;
 
 	r = ((r < spacer) ? (r + x) : ((r - spacer) + x));
 	g = ((g < spacer) ? (g + y) : ((g - spacer) + y));
 	b = ((b < spacer) ? (b + z) : ((b - spacer) + z));
-	return [r, g, b, alphaConst];
+	return [r, g, b, ALPHA];
 }
 function retrieveColor(finalColor, baseColor, base) {
-	r = finalColor[0],g = finalColor[1],b = finalColor[2];
-	x = baseColor[0],y = baseColor[1],z = baseColor[2];
-	i = 0, j = 0, k = 0;
-	spacer = base - 1;
+	var r = finalColor[0],g = finalColor[1],b = finalColor[2];
+	var x = baseColor[0],y = baseColor[1],z = baseColor[2];
+	var spacer = base - 1;
 	
-	i = ((x < spacer) ? (r - x) : (r + spacer - x));
-	j = ((y < spacer) ? (g - y) : (g + spacer - y));
-	k = ((z < spacer) ? (b - z) : (b + spacer - z));
-	return [i, j, k, alphaConst];
+	r = ((x < spacer) ? (r - x) : (r + spacer - x));
+	g = ((y < spacer) ? (g - y) : (g + spacer - y));
+	b = ((z < spacer) ? (b - z) : (b + spacer - z));
+	return [r, g, b, ALPHA];
 }
 function avgColor(col1, col2) {
 	var outCol = [];
 	outCol.push(parseInt((col1[0] + col2[0])/2));
 	outCol.push(parseInt((col1[1] + col2[1])/2));
 	outCol.push(parseInt((col1[2] + col2[2])/2));
-	outCol.push(alphaConst);
+	outCol.push(ALPHA);
 	return outCol;
 }
+
 function xthPattern(idx, xth) {
 	if((idx + 1) % xth == 0) return true;
 	else return false;

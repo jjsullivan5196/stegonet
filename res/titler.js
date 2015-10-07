@@ -1,5 +1,5 @@
-title = "Steganosaurus: ";
-titleArray = [
+var title = "Steganosaurus: ";
+var titleArray = [
 	"The world's greatest image stegonography tool.",
 	"Your secrets are not safe with us.",
 	"Shame.",
