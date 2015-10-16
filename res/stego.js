@@ -91,8 +91,8 @@ function retrieve(ev) {
 		imageData	=	ctx.getImageData(0, 0, canvas.width, canvas.height),
 		data		=	imageData.data,
 		reader		=	new FileReader(),
-		fileName	=	new String(),
-		buffer		=	new Array();
+		fileName	=	'',
+		buffer		=	[];
 	
 	var	col1	=	retrieveColor(getPixel(data, 0),getPixel(data, 3),10),
 		col2	=	retrieveColor(getPixel(data, 1),getPixel(data, 3),10),
@@ -116,7 +116,7 @@ function retrieve(ev) {
 	var	byteBuffer	=	new ArrayBuffer(buffer.length),
 		byteView	=	new Uint8Array(byteBuffer);
 	for(var i = 0; i < buffer.length; i++) byteView[i] = buffer[i];
-	var newFile = new Blob([byteBuffer], {type:getMime(fileName)});
+	var newFile = new Blob([byteBuffer], {type:MIME.get(fileName)});
 	
 	if(link.href) URL.revokeObjectURL(link.href);
 	link.href = URL.createObjectURL(newFile);
@@ -129,4 +129,3 @@ window.onload = function() {
 	document.getElementById('stegoInject').addEventListener('click', inject, false);
 	document.getElementById('stegoRetrieve').addEventListener('click', retrieve, false);
 };
-

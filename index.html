@@ -4,6 +4,8 @@
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="res/styles.css" />
 		<script type="text/javascript" src="res/titler.js"></script>
+		<script type="text/javascript" src="res/mime.js"></script>
+		<script type="text/javascript" src="res/bloburl.js"></script>
 		<script type="text/javascript" src="res/functions.js"></script>
 		<script type="text/javascript" src="res/stego.js"></script>
 	</head>
@@ -12,7 +14,7 @@
 		<div id="appContainer">
 			<div id="canvasContainer"><canvas id="stegoImage" width="0" height="0">Image</canvas></div>
 			<div id="appButtons">
-				<input id="inImage" type="file"/>Image<br/>
+				<input id="inImage" type="file" accept="image/*"/>Image<br/>
 				<input id="inFile" type="file"/>File<br/>
 				<button id="stegoInject" type="button" >Inject</button>
 				<button id="stegoRetrieve" type="button">Retrieve</button><br/>
