@@ -8,13 +8,6 @@ var fileExt = {
 var ALPHA = 255;
 
 function getMime(fname) {
-	/*var ext = new String();
-	for(var i = (fname.length - 1); fname[i] != '.'; i--) {
-		ext = fname[i].toLowerCase() + ext;
-		if(i == 0) return fileExt['txt'];
-	}
-	if(!(ext in fileExt)) return fileExt['txt'];
-	else return fileExt[ext];*/
 	if(fname.indexOf('.') >= 0) {
 		var ext = fname.substring((fname.lastIndexOf('.')) + 1);
 		return (!(ext in fileExt) ? (fileExt['txt']) : (fileExt[ext]));
