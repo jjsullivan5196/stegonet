@@ -1,202 +1,32 @@
 <html>
-<title id="titleText"></title>
-<canvas id="Image">Image</canvas><br/>
-<input type="file" id="image">Choose Image</input><br/>
-<input type="file" id="inFile">Choose File</input><br/>
-<button type="button" id="inject">Inject</button>
-<button type="button" id="retrieve">Retrieve</button><br/>
-<a href="" download="" id="rFile"></a>
-<script type="text/javascript">
-title = "Steganosaurus: ";
-titleArray = [
-	"The world's greatest image stegonography tool.",
-	"Your secrets are not safe with us.",
-	"Shame.",
-	"Your number one source for evading the NSA.",
-	"Big brother is watching.",
-	"Images of your johnson don't work.",
-	"Use any image of the President for a surprise.",
-	"Why are you here?",
-	"We don't negotiate with terrorists.",
-	"Your packets have been diverted, consequences will never be the same."
-];
-title += titleArray[parseInt(Math.random() * 10)];
-document.getElementById('titleText').innerHTML = title;
-
-var alphaConst = 255;
-function setPixel(data, idx, color) {
-	idx = idx*4;
-	data[idx+0] = color[0];
-	data[idx+1] = color[1];
-	data[idx+2] = color[2];
-	data[idx+3] = color[3];
-}
-function getPixel(data, idx) {
-	idx = idx*4;
-	return [data[idx+0],data[idx+1],data[idx+2],data[idx+3]];
-}
-function valToRGBA(val, base) {
-	color = [0, 0, 0, alphaConst];
-	
-	hundreds = (val - (val%Math.pow(base, 2)))/Math.pow(base, 2);
-	color[2] = parseInt(hundreds);
-	val -= hundreds * Math.pow(base, 2);
-	
-	tens = (val - (val%base))/base;
-	color[1] = parseInt(tens);
-	val -= tens * base;
-	
-	color[0] = parseInt(val);
-	return color;
-}
-function rgbaToVal(color, base) {
-	return (color[0] + (color[1] * base) + (color[2] * Math.pow(base, 2)));
-}
-function injectColor(baseColor, dataColor, base) {
-	r = baseColor[0],g = baseColor[1],b = baseColor[2];
-	x = dataColor[0],y = dataColor[1],z = dataColor[2];
-	spacer = base - 1;
-
-	r = ((r < spacer) ? (r + x) : ((r - spacer) + x));
-	g = ((g < spacer) ? (g + y) : ((g - spacer) + y));
-	b = ((b < spacer) ? (b + z) : ((b - spacer) + z));
-	return [r, g, b, alphaConst];
-}
-function retrieveColor(finalColor, baseColor, base) {
-	r = finalColor[0],g = finalColor[1],b = finalColor[2];
-	x = baseColor[0],y = baseColor[1],z = baseColor[2];
-	i = 0, j = 0, k = 0;
-	spacer = base - 1;
-	
-	i = ((x < spacer) ? (r - x) : (r + spacer - x));
-	j = ((y < spacer) ? (g - y) : (g + spacer - y));
-	k = ((z < spacer) ? (b - z) : (b + spacer - z));
-	return [i, j, k, alphaConst];
-}
-function avgColor(col1, col2) {
-	var outCol = [];
-	outCol.push(parseInt((col1[0] + col2[0])/2));
-	outCol.push(parseInt((col1[1] + col2[1])/2));
-	outCol.push(parseInt((col1[2] + col2[2])/2));
-	outCol.push(alphaConst);
-	return outCol;
-}
-
-org = document.getElementById("Image");
-inImg = org.getContext("2d");
-var file;
-
-function selectImage(ev) {
-	imgFile = ev.target.files[0];
-	reader = new FileReader();
-	reader.onload = function() {
-		im = new Image();
-		imgURL = reader.result;
-		im.onload = function() {
-			org.width = im.width;
-			org.height = im.height;
-			org.name = imgFile.name;
-			inImg.drawImage(im, 0, 0);
-		};
-		im.src = imgURL;
-	};
-	reader.readAsDataURL(imgFile);
-}
-document.getElementById('image').addEventListener('change', selectImage, false);
-
-function selectFile(ev) { file = ev.target.files[0]; }
-document.getElementById('inFile').addEventListener('change', selectFile, false);
-
-function inject(ev) {
-	reader = new FileReader();
-	imageData = inImg.getImageData(0, 0, org.width, org.height);
-	newData = inImg.createImageData(org.width, org.height);
-	data = imageData.data;
-	ndata = newData.data;
-	reader.onload = function(e) {
-		fileCont = Array.from(new Uint8Array(e.target.result));
-		fileName = [file.name.length];
-		for(var i = 0; i < file.name.length; i++) fileName.push(file.name.charCodeAt(i));
-		fileBytes = new Uint8Array(fileName.concat(fileCont));
-		byteNum = fileBytes.length;
-		
-		console.log("File name: " + file.name + "\nBytes to be injected: " + byteNum);
-		
-		ones = byteNum%1000;
-		millions = (byteNum - (byteNum%1000000))/1000000;
-		thousands = (byteNum - (byteNum%1000) - (millions * 1000000))/1000;
-		col1 = valToRGBA(ones, 10);
-		col2 = valToRGBA(thousands, 10);
-		col3 = valToRGBA(millions, 10);
-		setPixel(ndata, 0, injectColor(getPixel(data, 3), col1, 10));
-		setPixel(ndata, 1, injectColor(getPixel(data, 3), col2, 10));
-		setPixel(ndata, 2, injectColor(getPixel(data, 3), col3, 10));
-		setPixel(ndata, 3, getPixel(data, 3));
-		
-		for(var i = 4, j = 0; i < (data.length/4); i++) {
-			if( ((i+1) % 3 == 0) && (j < fileBytes.length) ) {
-				baseColor = avgColor(getPixel(data, (i-1)), getPixel(data, (i+1)));
-				dataColor = valToRGBA(fileBytes[j], 7);
-				finalColor = injectColor(baseColor, dataColor, 7);
-				setPixel(ndata, i, finalColor);
-				j++;
-			}
-			else setPixel(ndata, i, getPixel(data, i));
-		}
-		inImg.putImageData(newData, 0, 0);
-	};
-	reader.readAsArrayBuffer(file);
-}
-document.getElementById('inject').addEventListener('click', inject, false);
-function retrieve(ev) {
-	imageData = inImg.getImageData(0, 0, org.width, org.height);
-	data = imageData.data;
-	reader = new FileReader();
-	buffer = [];
-	fileName = new String();
-	
-	col1 = retrieveColor(getPixel(data, 0),getPixel(data, 3),10);
-	col2 = retrieveColor(getPixel(data, 1),getPixel(data, 3),10);
-	col3 = retrieveColor(getPixel(data, 2),getPixel(data, 3),10);
-	byteNum = (rgbaToVal(col3, 10)*1000000) + (rgbaToVal(col2, 10)*1000) + rgbaToVal(col1, 10);
-	
-	for(var i = 4; buffer.length < byteNum; i++) {
-		if((i+1) % 3 == 0) {
-			baseColor = avgColor(getPixel(data, (i-1)), getPixel(data, (i+1)));
-			dataColor = retrieveColor(getPixel(data, i), baseColor, 7);
-			inData = rgbaToVal(dataColor, 7);
-			buffer.push(inData);
-			}
-	}
-	
-	nameBytes = buffer.splice(0, (buffer[0] + 1)); nameBytes.shift();
-	for(var i = 0; i < (nameBytes.length); i++) fileName += String.fromCharCode(nameBytes[i]);
-	
-	console.log("File name: " + fileName + "\nBytes retrieved: " + buffer.length);
-	
-	byteBuffer = new ArrayBuffer(buffer.length);
-	byteView = new Uint8Array(byteBuffer);
-	for(var i = 0; i < buffer.length; i++) byteView[i] = buffer[i];
-	newFile = new Blob([byteBuffer]);
-	
-	reader.onload = function(e) {
-		link = document.getElementById('rFile');
-		link.href = e.target.result;
-		link.download = fileName;
-		link.innerHTML = String("Retrieved: " + fileName);
-	}
-	reader.readAsDataURL(newFile);
-}
-document.getElementById('retrieve').addEventListener('click', retrieve, false);
-
-function check(ev) {
-	checkOld = inImg.getImageData(0, 0, org.width, org.height).data; checkNew = outImg.getImageData(0, 0, org.width, org.height).data; count = 0;
-	for(var i = 0; i < (checkOld.length/4); i++) {
-		oldColor = getPixel(checkOld, i);
-		newColor = getPixel(checkNew, i);
-		if((oldColor[0] != newColor[0]) || (oldColor[1] != newColor[1]) || (oldColor[2] != newColor[2]) || (oldColor[3] != newColor[3])) count++;
-	} console.log("Pixel differences found: " + count);
-}
-//document.getElementById('check').addEventListener('click', check, false);
-</script>
+	<head>
+		<title>Steganosaurus: The world's greatest image stegonography tool.</title>
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="res/styles.css" />
+		<script type="text/javascript" src="js/titler.js"></script>
+		<script type="text/javascript" src="js/mime.js"></script>
+		<script type="text/javascript" src="js/bloburl.js"></script>
+		<script type="text/javascript" src="js/functions.js"></script>
+		<script type="text/javascript" src="js/stego.js"></script>
+	</head>
+	<body>
+		<a href="http://www.github.com/jjsullivan5196/steganosaurus"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/c6625ac1f3ee0a12250227cf83ce904423abf351/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png"></a>
+		<div id="appContainer">
+			<div id="canvasContainer"><canvas id="stegoImage" width="0" height="0">Image</canvas></div>
+			<div id="appButtons">
+				<input id="inImage" type="file" accept="image/*"/>Image<br/>
+				<input id="inFile" type="file"/>File<br/>
+				<button id="stegoInject" type="button" >Inject</button>
+				<button id="stegoRetrieve" type="button">Retrieve</button><br/>
+				<input id="xthPixel" type="number" size="1" maxlength="2" value="3" min="3" max="20"/> xth Pixel Storage<br/>
+				<a id="stegoFile" href="" download=""></a>
+				<p id="stegoErr"></p>
+			</div>
+			<div id="logoContainer">
+				<div id="logo">
+				<a href="http://www.github.com/jjsullivan5196/stegonet"><img src="logo.svg" style="max-width:32px"/></a>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
