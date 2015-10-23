@@ -5,7 +5,7 @@ var MIME = {
 		while (args.length > 0) this.exTable[args.pop()] = mimetype;
 	},
 	get : function(fname) {
-		var ext = ((fname.indexOf('.') >= 0) ? (fname.substring((fname.lastIndexOf('.')) + 1)) : 'txt');
+		var ext = ((fname.indexOf('.') >= 0) ? (fname.substring((fname.lastIndexOf('.')) + 1)) : 'txt').toLowerCase();
 		return (!(ext in this.exTable) ? (this.exTable['txt']) : (this.exTable[ext]));
 	}
 };

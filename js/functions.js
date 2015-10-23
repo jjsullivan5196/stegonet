@@ -38,11 +38,15 @@ function retrieveColor(finalColor, baseColor, base) {
 		outColor[i] = ((baseColor[i] < spacer) ? (finalColor[i] - baseColor[i]) : (finalColor[i] + spacer - baseColor[i]));
 	return outColor;
 }
-function avgColor(col1, col2) {
-	var outColor = [0, 0, 0, ALPHA];
-	for(var i = 0; i < 3; i++)
-		outColor[i] = parseInt((col1[i] + col2[i])/2);
-	return outColor;
+function avgColor() {
+	var col = [0, 0, 0, ALPHA];
+	for(var i = 0; i < arguments.length; i++) {
+		col[0] += arguments[i][0];
+		col[1] += arguments[i][1];
+		col[2] += arguments[i][2];
+	};
+	for(var i = 0; i < (col.length - 1); i++) col[i] = parseInt(col[i]/arguments.length);
+	return col;
 }
 
 function xthPattern(idx, xth) {

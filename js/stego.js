@@ -126,6 +126,7 @@ function retrieve(ev) {
 }
 
 window.onload = function() {
+	titler();
 	document.getElementById('inImage').addEventListener('change', selectImage, false);
 	document.getElementById('stegoInject').addEventListener('click', inject, false);
 	document.getElementById('stegoRetrieve').addEventListener('click', retrieve, false);
