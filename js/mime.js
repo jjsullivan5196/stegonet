@@ -1,3 +1,4 @@
+//mime.js -- literally the world's only in-browser mime-type checker.
 var MIME = {
 	exTable : {},
 	set : function() {

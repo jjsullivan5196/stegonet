@@ -64,8 +64,7 @@ function inject(ev) {
 		setPixel(ndata, 1, injectColor(getPixel(data, 3), col2, 10));
 		setPixel(ndata, 2, injectColor(getPixel(data, 3), col3, 10));
 		setPixel(ndata, 3, getPixel(data, 3));
-		console.log(ones,thousands,millions);
-		
+
 		for(var i = 4, j = 0; i < (data.length/4); i++) {
 			if( (xthPattern(i, xth)) && (j < fileBytes.length) ) {
 				var	baseColor	=	avgColor(getPixel(data, (i-1)), getPixel(data, (i+1))),

@@ -1,5 +1,6 @@
-var ALPHA = 255;
+var ALPHA = 255; //Alpha constant, since the alpha channel isn't used
 
+//These functions are mere pixel set/get for HTML canvas, makes it easier to iterate a canvas
 function setPixel(data, idx, color) {
 	idx = idx*4;
 	for(var i = 0; i < color.length; i++) data[idx+i] = color[i];
@@ -9,6 +10,7 @@ function getPixel(data, idx) {
 	return [data[idx+0],data[idx+1],data[idx+2],data[idx+3]];
 }
 
+//Fun stuff -- these functions do the work of spacing out colors to store data in pixels
 function valToRGBA(val, base) {
 	color = [0, 0, 0, ALPHA];
 	
@@ -49,6 +51,7 @@ function avgColor() {
 	return col;
 }
 
+//Pixel selection is done here -- any pixel selection algorithm should be able to be passed as an argument to checkSize to validate storage
 function xthPattern(idx, xth) {
 	if((idx + 1) % xth == 0) return true;
 	else return false;
