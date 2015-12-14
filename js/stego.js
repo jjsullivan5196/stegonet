@@ -38,6 +38,8 @@ function inject(ev) {
 		
 	if(link.href) URL.revokeObjectURL(link.href);
 	
+	if(xth < 3) xth = determineBestChannel(byteNum, canvas.width, canvas.height);
+	
 	reader.onload = function(e) {
 		var	fileCont	=	Array.from(new Uint8Array(e.target.result)),
 			fileName	=	[file.name.length];
@@ -98,6 +100,8 @@ function retrieve(ev) {
 		col2	=	retrieveColor(getPixel(data, 1),getPixel(data, 3),10),
 		col3	=	retrieveColor(getPixel(data, 2),getPixel(data, 3),10),
 		byteNum	=	(rgbaToVal(col3, 10)*1000000) + (rgbaToVal(col2, 10)*1000) + rgbaToVal(col1, 10);
+		
+	if(xth < 3) xth = scanXth(data);
 	
 	for(var i = 4; buffer.length < byteNum; i++) {
 		if(xthPattern(i, xth)) {
