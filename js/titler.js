@@ -9,7 +9,8 @@ function titler() {
 		"Use any image of the President for a surprise.",
 		"Why are you here?",
 		"We don't negotiate with terrorists.",
-		"Your packets have been diverted, consequences will never be the same."
+		"Your packets have been diverted, consequences will never be the same.",
+		"Nobody cared what the file was until you hid it."
 	];
 	document.title = "Steganosaurus: " + titleArray[parseInt(Math.random() * titleArray.length)];
 }
