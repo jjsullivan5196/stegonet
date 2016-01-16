@@ -38,14 +38,14 @@ function inject(ev) {
 		
 	if(link.href) URL.revokeObjectURL(link.href);
 	
-	if(xth < 3) xth = determineBestChannel(byteNum, canvas.width, canvas.height);
-	
 	reader.onload = function(e) {
 		var	fileCont	=	Array.from(new Uint8Array(e.target.result)),
 			fileName	=	[file.name.length];
 		for(var i = 0; i < file.name.length; i++) fileName.push(file.name.charCodeAt(i));
 		var	fileBytes	=	new Uint8Array(fileName.concat(fileCont)),
 			byteNum		=	fileBytes.length;
+			
+		if(xth < 3) xth = determineBestChannel(byteNum, canvas.width, canvas.height);
 		
 		if(!checkSize(byteNum, (data.length/4), xthPattern, xth)) {
 			console.log("In file too large to inject.");
